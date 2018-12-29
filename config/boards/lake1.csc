@@ -1,0 +1,13 @@
+# RTD1295 quad core 2GB 1xSATA 1xUSB3.0 1xGBE Wifi/BT
+BOARD_NAME="Lake 1"
+BOARDFAMILY="rtd1295"
+#BOOTCONFIG="rtd1295_2GB_defconfig"
+BOOTCONFIG="evb-rk3328_defconfig"
+#
+MODULES="#"
+MODULES_NEXT="#"
+BUILD_DESKTOP="no"
+#
+KERNEL_TARGET="default"
+CLI_TARGET="stretch,bionic:default"
+CLI_BETA_TARGET=""
