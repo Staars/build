@@ -1,0 +1,17 @@
+diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+index fc9b25703..25214b210 100644
+--- a/drivers/bluetooth/btrtl.c
++++ b/drivers/bluetooth/btrtl.c
+@@ -452,8 +452,10 @@ int btrtl_setup_realtek(struct hci_dev *hdev)
+ 		return btrtl_setup_rtl8723b(hdev, lmp_subver,
+ 					    "rtl_bt/rtl8723b_fw.bin");
+ 	case RTL_ROM_LMP_8821A:
+-		return btrtl_setup_rtl8723b(hdev, lmp_subver,
+-					    "rtl_bt/rtl8821a_fw.bin");
++	/*	return btrtl_setup_rtl8723b(hdev, lmp_subver,
++					    "rtl_bt/rtl8821a_fw.bin");*/
++	        BT_INFO("rtl: assuming this is Armbian with a sufficient driver, no firmware upload needed.");
++                return 0;
+ 	case RTL_ROM_LMP_8761A:
+ 		return btrtl_setup_rtl8723b(hdev, lmp_subver,
+ 					    "rtl_bt/rtl8761a_fw.bin");
