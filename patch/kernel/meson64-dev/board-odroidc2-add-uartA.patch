@@ -10,3 +10,16 @@ index 1cc9dc6..9f48dff 100644
  		ethernet0 = &ethmac;
  	};
  
+@@ -290,6 +355,12 @@
+ 	pinctrl-names = "default";
+ };
+ 
++&uart_A {
++	status = "disabled";
++	pinctrl-0 = <&uart_a_pins>;
++	pinctrl-names = "default";
++};
++
+ &usb0_phy {
+ 	status = "okay";
+ 	phy-supply = <&usb_otg_pwr>;
