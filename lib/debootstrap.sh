@@ -66,7 +66,7 @@ debootstrap_ng()
 	customize_image
 
 	# create list of installed packages for debug purposes
-	chroot $SDCARD /bin/bash -c "dpkg --get-selections" | grep -v deinstall | awk '{print $1}' | cut -f1 -d':' >> $DEST/debug/installed-packages-${RELEASE}.list 2>&1
+	chroot $SDCARD /bin/bash -c "dpkg --get-selections" | grep -v deinstall | awk '{print $1}' | cut -f1 -d':' > $DEST/debug/installed-packages-${RELEASE}-${BUILD_DESKTOP}.list 2>&1
 
 	# clean up / prepare for making the image
 	umount_chroot "$SDCARD"
@@ -115,6 +115,8 @@ create_rootfs_cache()
 		display_alert "Extracting $display_name" "$date_diff days old" "info"
 		pv -p -b -r -c -N "[ .... ] $display_name" "$cache_fname" | lz4 -dc | tar xp --xattrs -C $SDCARD/
 		[[ $? -ne 0 ]] && rm $cache_fname && exit_with_error "Cache $cache_fname is corrupted and was deleted. Restart."
+		rm $SDCARD/etc/resolv.conf
+		echo "nameserver $NAMESERVER" >> $SDCARD/etc/resolv.conf
 	else
 		display_alert "... remote not found" "Creating new rootfs cache for $RELEASE" "info"
 
@@ -300,8 +302,7 @@ prepare_partitions()
 	# parttype[nfs] is empty
 
 	# metadata_csum and 64bit may need to be disabled explicitly when migrating to newer supported host OS releases
-	# TODO: Disable metadata_csum only for older releases (jessie)?
-	if [[ $(lsb_release -sc) == bionic ]]; then
+	if [[ $(lsb_release -sc) =~ bionic|buster|cosmic|disco ]]; then
 		mkopts[ext4]='-q -m 2 -O ^64bit,^metadata_csum'
 	elif [[ $(lsb_release -sc) == xenial ]]; then
 		mkopts[ext4]='-q -m 2'

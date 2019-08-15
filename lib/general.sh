@@ -117,7 +117,7 @@ exit_with_error()
 get_package_list_hash()
 {
 	( printf '%s\n' $PACKAGE_LIST | sort -u; printf '%s\n' $PACKAGE_LIST_EXCLUDE | sort -u; echo "$ROOTFSCACHE_VERSION" ) \
-		| echo "${REVISION:0:3}" | md5sum | cut -d' ' -f 1
+		| md5sum | cut -d' ' -f 1
 }
 
 # create_sources_list <release> <basedir>
@@ -259,6 +259,7 @@ fetch_from_repo()
 		esac
 		display_alert "Checking out"
 		git checkout -f -q FETCH_HEAD
+		git clean -qdf
 	elif [[ -n $(git status -uno --porcelain --ignore-submodules=all) ]]; then
 		# working directory is not clean
 		if [[ $FORCE_CHECKOUT == yes ]]; then

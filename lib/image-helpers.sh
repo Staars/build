@@ -116,7 +116,7 @@ customize_image()
 	display_alert "Calling image customization script" "customize-image.sh" "info"
 	chroot "${SDCARD}" /bin/bash -c "/tmp/customize-image.sh $RELEASE $LINUXFAMILY $BOARD $BUILD_DESKTOP"
 	CUSTOMIZE_IMAGE_RC=$?
-	umount "${SDCARD}"/tmp/overlay
+	umount -i "${SDCARD}"/tmp/overlay
 	mountpoint -q "${SDCARD}"/tmp/overlay || rm -r "${SDCARD}"/tmp/overlay
 	if [[ $CUSTOMIZE_IMAGE_RC != 0 ]]; then
 		exit_with_error "customize-image.sh exited with error (rc: $CUSTOMIZE_IMAGE_RC)"
@@ -130,6 +130,9 @@ install_deb_chroot()
 	name=$(basename "${package}")
 	cp "${package}" "${SDCARD}/root/${name}"
 	display_alert "Installing" "$name"
-	chroot "${SDCARD}" /bin/bash -c "dpkg -i /root/$name" >> "${DEST}"/debug/install.log 2>&1
+	[[ $NO_APT_CACHER != yes ]] && local apt_extra="-o Acquire::http::Proxy=\"http://${APT_PROXY_ADDR:-localhost:3142}\" -o Acquire::http::Proxy::localhost=\"DIRECT\""
+	LC_ALL=C LANG=C chroot "${SDCARD}" /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get -yqq \
+		$apt_extra --no-install-recommends install ./root/$name" >> "${DEST}"/debug/install.log 2>&1
+
 	rm -f "${SDCARD}/root/${name}"
 }
