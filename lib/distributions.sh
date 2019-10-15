@@ -99,6 +99,9 @@ install_common()
 	# console fix due to Debian bug
 	sed -e 's/CHARMAP=".*"/CHARMAP="'$CONSOLE_CHAR'"/g' -i "${SDCARD}"/etc/default/console-setup
 
+	# add the /dev/urandom path to the rng config file
+	echo "HRNGDEVICE=/dev/urandom" >> "${SDCARD}"/etc/default/rng-tools
+
 	# ping needs privileged action to be able to create raw network socket
 	# this is working properly but not with (at least) Debian Buster
 	chroot "${SDCARD}" /bin/bash -c "chmod u+s /bin/ping"
@@ -260,9 +263,9 @@ install_common()
 	ifs=$IFS
 	for i in $(echo ${SERIALCON} | sed "s/,/ /g")
 	do
-		# add serial console to secure tty list
-		[ -z "$(grep -w '^$i' "${SDCARD}"/etc/securetty 2> /dev/null)" ] && echo "$i" >>  "${SDCARD}"/etc/securetty
 		IFS=':' read -r -a array <<< "$i"
+		# add serial console to secure tty list
+		[ -z "$(grep -w '^${array[0]}' "${SDCARD}"/etc/securetty 2> /dev/null)" ] && echo "${array[0]}" >>  "${SDCARD}"/etc/securetty
 		if [[ ${array[1]} != "115200" && -n ${array[1]} ]]; then
 			# make a copy, fix speed and enable
 			cp "${SDCARD}"/lib/systemd/system/serial-getty@.service "${SDCARD}"/lib/systemd/system/serial-getty@${array[0]}.service
