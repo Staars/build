@@ -64,7 +64,7 @@ jobs:
 
   clean:
 
-    if: ${{ github.repository_owner == 'Armbian' }}
+    if: ${{ github.repository_owner == 'Staars' }}
     name: Purge older releases
     runs-on: [ubuntu-latest]
     steps:
@@ -84,7 +84,7 @@ jobs:
           days_old: 14
 
   fake:
-    if: ${{ github.repository_owner == 'Armbian' }}
+    if: ${{ github.repository_owner == 'Staars' }}
     runs-on: small
     needs: [ clean ]
     name: Source changes
@@ -134,7 +134,7 @@ jobs:
   generaterelease:
 
     needs: [ fake ]
-    if: ${{ github.repository_owner == 'Armbian' && needs.fake.outputs.changes != 'true' }}
+    if: ${{ github.repository_owner == 'Staars' && needs.fake.outputs.changes != 'true' }}
     runs-on: ubuntu-latest
     name: "Update latest release"
     steps:
@@ -162,7 +162,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: ncipollo/release-action@v1
-        if: ${{ github.repository_owner == 'Armbian' && github.event.inputs.choice != 'stable'  && github.event.inputs.choice != 'rc' }}
+        if: ${{ github.repository_owner == 'Staars' && github.event.inputs.choice != 'stable'  && github.event.inputs.choice != 'rc' }}
         with:
           artifacts: "LICENSE"
           tag: "${{ needs.fake.outputs.version }}"
